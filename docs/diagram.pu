@@ -1,0 +1,65 @@
+@startuml
+enum AccountType {
+}
+
+class Account {
+    - store: HashMap
+    - acc_type: AccountType
+    - tokens: u128
+    + method(type): type
+}
+
+Account *-- AccountType
+
+class Block {
+    - transactions: Vec<Transaction>
+    - prev_hash: String
+    - nounce: u128    
+    
+    + caluculate_hash(type): Vec<u8> 
+    + add_transation(Transaction): String
+    + set_nounce(u128): () 
+}
+
+class Transaction {
+    + record: TransactionData
+    - from: String
+    - created_at: SystemTime
+    - nounce: u128
+    - signature: String
+
+    + caluculate_hash(WorldState, bool): R
+    + check_signature(): bool
+    + is_signed(): bool
+    + calculate_hash(): Vec<u8>
+    # execute(WorldState, bool): Result
+}
+
+Enum TransactionData {
+
+}
+
+Transaction *-- TransactionData
+Block o-- Transaction
+
+class Blockchain {
+    - blocks: Vec<Block>
+    - accounts: Vec<Account>
+    - pending_transactions: Vec<Transaction>
+    + append_block(Block): Result
+    + check_validity(Block): Result
+}
+
+Blockchain o-- Account
+Blockchain o-- Block
+
+interface WorldState {
+    + get_user_ids(): Vec<String>
+    + get_account_by_id_mut(String): Account
+    + get_account_by_id(String): Account
+    + create_account(String, AccountType): Result
+}
+
+WorldState <|-- Blockchain
+
+@enduml
